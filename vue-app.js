@@ -171,6 +171,8 @@ createApp({
             progressPercent: 0,
             currentAudioBook: '', // 當前載入音檔的書卷
             currentAudioChapter: 0, // 當前載入音檔的章節
+            playbackRate: 1.0, // 播放速度
+            showSpeedSettings: false, // 顯示速度設定
             
             // UI 狀態
             loading: false,
@@ -314,6 +316,7 @@ createApp({
         this.setupKeyboardShortcuts();
         this.loadBookmarks();
         this.loadHistoryFromStorage();
+        this.loadPlaybackSettings();
         this.loadTheme();
         
         // 預設載入太1:1用於測試
@@ -378,6 +381,20 @@ createApp({
                             this.loadVerse();
                         }
                         break;
+                    case 'Escape':
+                        // ESC 鍵關閉打開的設定面板
+                        e.preventDefault();
+                        this.showSpeedSettings = false;
+                        this.showBookmarks = false;
+                        this.showHelp = false;
+                        break;
+                }
+            });
+            
+            // 點擊外部關閉速度設定面板
+            document.addEventListener('click', (e) => {
+                if (this.showSpeedSettings && !e.target.closest('.speed-settings') && !e.target.closest('[title="播放速度設定"]')) {
+                    this.showSpeedSettings = false;
                 }
             });
         },
@@ -651,7 +668,9 @@ createApp({
             const audio = this.$refs.audioPlayer;
             if (audio) {
                 this.duration = audio.duration;
-                console.log(`音檔載入完成: ${this.audioSrc}, 時長: ${audio.duration.toFixed(2)}秒`);
+                // 應用播放速度設定
+                audio.playbackRate = this.playbackRate;
+                console.log(`音檔載入完成: ${this.audioSrc}, 時長: ${audio.duration.toFixed(2)}秒, 播放速度: ${this.playbackRate}x`);
             }
         },
         
@@ -687,6 +706,45 @@ createApp({
         
         onAudioCanPlay() {
             console.log('音檔可以播放:', this.audioSrc);
+        },
+        
+        // 播放速度控制
+        setPlaybackRate(rate) {
+            this.playbackRate = rate;
+            const audio = this.$refs.audioPlayer;
+            if (audio) {
+                audio.playbackRate = rate;
+            }
+            this.showSpeedSettings = false;
+            this.savePlaybackSettings();
+        },
+        
+        toggleSpeedSettings() {
+            this.showSpeedSettings = !this.showSpeedSettings;
+        },
+        
+        savePlaybackSettings() {
+            try {
+                localStorage.setItem('taiwanese-bible-playback-rate', this.playbackRate.toString());
+            } catch (error) {
+                console.error('儲存播放設定失敗:', error);
+            }
+        },
+        
+        loadPlaybackSettings() {
+            try {
+                const saved = localStorage.getItem('taiwanese-bible-playback-rate');
+                if (saved) {
+                    this.playbackRate = parseFloat(saved);
+                    // 如果有音檔正在播放，立即應用設定
+                    const audio = this.$refs.audioPlayer;
+                    if (audio) {
+                        audio.playbackRate = this.playbackRate;
+                    }
+                }
+            } catch (error) {
+                console.error('載入播放設定失敗:', error);
+            }
         },
         
         formatTime(seconds) {
