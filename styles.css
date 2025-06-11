@@ -1,4 +1,14 @@
 /* CSS Reset and Base Styles */
+
+/* 芫荽字型定義 */
+@font-face {
+    font-family: 'Iansui';
+    src: url('./fonts/Iansui-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -6,7 +16,8 @@
 }
 
 body {
-    font-family: 'Noto Sans TC', Arial, sans-serif;
+    font-family: 'Iansui', 'Noto Sans TC', 'Source Han Sans TC', 'Microsoft JhengHei', '微軟正黑體', Arial, sans-serif;
+    font-weight: 400; /* 調整為正常字重 */
     background: linear-gradient(135deg, #38b2ac 0%, #4fd1c7 100%);
     min-height: 100vh;
     color: #333;
@@ -40,7 +51,7 @@ body {
 .header h1 {
     color: #4a5568;
     font-size: 2.2em;
-    font-weight: 700;
+    font-weight: 600;
     margin: 0;
 }
 
@@ -113,50 +124,18 @@ body {
     cursor: not-allowed;
 }
 
-.btn-primary {
-    background: linear-gradient(135deg, #38b2ac, #4fd1c7);
-    color: white;
-}
+/* 按鈕通用樣式與hover效果 */
+.btn-primary, .btn-audio { background: linear-gradient(135deg, #38b2ac, #4fd1c7); color: white; }
+.btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(56, 178, 172, 0.4); }
+.btn-audio { width: 50px; height: 50px; border-radius: 50%; padding: 0; justify-content: center; }
+.btn-audio:hover:not(:disabled) { background: linear-gradient(135deg, #319795, #38b2ac); transform: scale(1.05); }
 
-.btn-primary:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(56, 178, 172, 0.4);
-}
-
-.btn-audio {
-    background: linear-gradient(135deg, #38b2ac, #4fd1c7);
-    color: white;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    padding: 0;
-    justify-content: center;
-}
-
-.btn-audio:hover:not(:disabled) {
-    background: linear-gradient(135deg, #319795, #38b2ac);
-    transform: scale(1.05);
-}
-
-.btn-nav {
-    background: #4fd1c7;
-    color: white;
-}
-
-.btn-nav:hover:not(:disabled) {
-    background: #38b2ac;
-    transform: translateY(-1px);
-}
-
-.btn-secondary {
-    background: #718096;
-    color: white;
-}
-
-.btn-secondary:hover:not(:disabled) {
-    background: #4a5568;
-    transform: translateY(-1px);
-}
+.btn-nav, .btn-secondary { color: white; }
+.btn-nav { background: #4fd1c7; }
+.btn-secondary { background: #718096; }
+.btn-nav:hover:not(:disabled), .btn-secondary:hover:not(:disabled) { transform: translateY(-1px); }
+.btn-nav:hover:not(:disabled) { background: #38b2ac; }
+.btn-secondary:hover:not(:disabled) { background: #4a5568; }
 
 /* 圖示按鈕樣式 */
 .btn-icon {
@@ -199,7 +178,7 @@ body {
     margin-bottom: 20px;
 }
 
-/* Audio Section - 保留原有樣式供參考 */
+/* Audio Section - 保留原有樣式 */
 .audio-section {
     background: linear-gradient(135deg, #f7fafc, #edf2f7);
     border-radius: 15px;
@@ -268,7 +247,7 @@ body {
 
 .book-title {
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 500;
     color: #2d3748;
     margin-bottom: 2px;
     white-space: nowrap;
@@ -291,30 +270,12 @@ body {
     align-items: center;
 }
 
-.nav-buttons .btn-nav:nth-child(1),
-.nav-buttons .btn-nav:nth-child(2) {
-    background: #38b2ac; /* 章節按鈕用藍綠色 */
-}
-
-.nav-buttons .btn-nav:nth-child(1):hover:not(:disabled),
-.nav-buttons .btn-nav:nth-child(2):hover:not(:disabled) {
-    background: #319795;
-}
-
-.nav-buttons .btn-nav:nth-child(3),
-.nav-buttons .btn-nav:nth-child(4) {
-    background: #4fd1c7; /* 經文按鈕用淺藍綠色 */
-}
-
-.nav-buttons .btn-nav:nth-child(3):hover:not(:disabled),
-.nav-buttons .btn-nav:nth-child(4):hover:not(:disabled) {
-    background: #38b2ac;
-}
-
-/* 在章節和經文按鈕之間添加間隔 */
-.nav-buttons .btn-nav:nth-child(2) {
-    margin-right: 4px;
-}
+/* 導航按鈕分組樣式 */
+.nav-buttons .btn-nav:nth-child(1), .nav-buttons .btn-nav:nth-child(2) { background: #38b2ac; }
+.nav-buttons .btn-nav:nth-child(1):hover:not(:disabled), .nav-buttons .btn-nav:nth-child(2):hover:not(:disabled) { background: #319795; }
+.nav-buttons .btn-nav:nth-child(3), .nav-buttons .btn-nav:nth-child(4) { background: #4fd1c7; }
+.nav-buttons .btn-nav:nth-child(3):hover:not(:disabled), .nav-buttons .btn-nav:nth-child(4):hover:not(:disabled) { background: #38b2ac; }
+.nav-buttons .btn-nav:nth-child(2) { margin-right: 4px; }
 
 .btn-nav {
     width: 40px;
@@ -419,11 +380,6 @@ body {
     opacity: 0.5;
 }
 
-/* 為頁面底部添加空間 */
-body {
-    padding-bottom: 0; /* 移除底部留白，讓播放器完全獨立 */
-}
-
 /* 響應式設計 */
 @media (max-width: 768px) {
     .container {
@@ -476,6 +432,16 @@ body {
         font-size: 16px;
         line-height: 1.6;
     }
+    
+    /* 歡迎畫面響應式 */
+    .welcome-content { padding: 30px 15px; }
+    .welcome-icon { font-size: 3em; }
+    .welcome-content h2 { font-size: 1.6em; }
+    .welcome-features { gap: 20px; }
+    .feature-item { min-width: 100px; padding: 15px; }
+    
+    /* 經文字型響應式 */
+    .verse-item .verse-text { line-height: 1.7 !important; letter-spacing: 0.02em !important; text-align: left !important; }
 }
 
 @media (max-width: 480px) {
@@ -537,13 +503,26 @@ body {
     }
     
     .verse-item {
-        padding: 15px 0;
+        padding: 0; /* 小螢幕上移除版本間分隔線上下間距 */
     }
     
     .verse-text {
         font-size: 15px;
         line-height: 1.5;
     }
+    
+    /* 歡迎畫面480px響應式 */
+    .welcome-content { padding: 25px 10px; }
+    .welcome-icon { font-size: 2.5em; }
+    .welcome-content h2 { font-size: 1.4em; }
+    .welcome-content p { font-size: 1em; }
+    .welcome-features { gap: 15px; }
+    .feature-item { min-width: 80px; padding: 12px; }
+    .feature-item i { font-size: 1.2em; }
+    .feature-item span { font-size: 12px; }
+    
+    /* 經文字型480px響應式 */
+    .verse-item .verse-text { line-height: 1.65 !important; }
 }
 
 @media (max-width: 320px) {
@@ -620,7 +599,7 @@ body {
 .current-reference h2 {
     color: #4a5568;
     font-size: 1.8em;
-    font-weight: 600;
+    font-weight: 500;
     margin: 0;
 }
 
@@ -633,47 +612,50 @@ body {
 
 /* 優化經文項目間距 */
 .verse-item {
-    padding: 15px 0; /* 減少內邊距 */
+    padding: 0; /* 移除版本間分隔線上下間距 */
 }
 
 .version-label {
     display: block;
-    font-weight: 600;
+    font-family: 'Iansui', 'Noto Sans TC', 'Source Han Sans TC', 'Microsoft JhengHei', sans-serif;
+    font-weight: 500; /* 版本標籤保持適中粗細 */
+    color: #2d6a4f;
+    font-size: 15px;
+    margin-bottom: 6px; /* 進一步縮小標籤與經文間距 */
+    text-transform: none;
+    letter-spacing: 0.1em;
+    opacity: 0.9;
+    position: relative;
+    padding-left: 8px;
+}
+
+.version-label::before {
+    content: '▎';
+    position: absolute;
+    left: 0;
     color: #38b2ac;
-    font-size: 14px;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.verse-text {
-    font-size: 18px;
-    line-height: 1.8;
-    color: #2d3748;
-    text-align: justify;
-}
-
-.version-divider {
-    border: none;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
-    margin: 0;
-}
-
-.navigation {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-    padding: 0 10px;
-}
-
-.current-ref {
-    font-size: 20px;
     font-weight: 600;
-    color: #4a5568;
-    text-align: center;
-    flex: 1;
+}
+
+/* 深色主題下的版本標籤裝飾 */
+body.dark-theme .version-label::before {
+    color: #68d391;
+}
+
+/* 基本 verse-text 樣式優化 */
+.verse-text {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+}
+
+/* 深色主題與hover效果 */
+body.dark-theme .verse-text { text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); }
+.verse-item:hover .verse-text { color: #000; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); }
+body.dark-theme .verse-item:hover .verse-text { color: #fff; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4); }
+
+/* 高DPI螢幕優化 */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .verse-text { -webkit-font-smoothing: subpixel-antialiased; -moz-osx-font-smoothing: auto; }
 }
 
 /* Loading Spinner */
@@ -720,22 +702,9 @@ body {
     font-size: 14px;
     font-weight: 500;
 }
-
-.network-status.online {
-    background: rgba(72, 187, 120, 0.1);
-    color: #38a169;
-    border: 1px solid rgba(72, 187, 120, 0.3);
-}
-
-.network-status.offline {
-    background: rgba(245, 101, 101, 0.1);
-    color: #e53e3e;
-    border: 1px solid rgba(245, 101, 101, 0.3);
-}
-
-.network-status i {
-    margin-right: 8px;
-}
+.network-status.online { background: rgba(72, 187, 120, 0.1); color: #38a169; border: 1px solid rgba(72, 187, 120, 0.3); }
+.network-status.offline { background: rgba(245, 101, 101, 0.1); color: #e53e3e; border: 1px solid rgba(245, 101, 101, 0.3); }
+.network-status i { margin-right: 8px; }
 
 /* Modal Styles */
 .modal {
@@ -827,7 +796,7 @@ kbd {
     border-radius: 6px;
     font-family: 'Courier New', monospace;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 500;
     min-width: 80px;
     text-align: center;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -850,22 +819,9 @@ kbd {
 }
 
 /* Bookmark Styles */
-.bookmark-form {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 15px;
-    align-items: center;
-}
-
-.bookmark-form .input-control {
-    flex: 1;
-}
-
-.bookmark-list {
-    max-height: 300px;
-    overflow-y: auto;
-}
-
+.bookmark-form { display: flex; gap: 10px; margin-bottom: 15px; align-items: center; }
+.bookmark-form .input-control { flex: 1; }
+.bookmark-list { max-height: 300px; overflow-y: auto; }
 .bookmark-item {
     display: flex;
     justify-content: space-between;
@@ -878,51 +834,14 @@ kbd {
     cursor: pointer;
     transition: all 0.3s ease;
 }
-
-.bookmark-item:hover {
-    background: #e2e8f0;
-    transform: translateX(5px);
-}
-
-.bookmark-info {
-    flex: 1;
-}
-
-.bookmark-title {
-    font-weight: 600;
-    color: #4a5568;
-    margin-bottom: 4px;
-}
-
-.bookmark-reference {
-    font-size: 14px;
-    color: #718096;
-}
-
-.bookmark-actions {
-    display: flex;
-    gap: 8px;
-}
-
-.bookmark-btn {
-    background: none;
-    border: none;
-    padding: 6px;
-    border-radius: 4px;
-    cursor: pointer;
-    color: #718096;
-    transition: all 0.3s ease;
-}
-
-.bookmark-btn:hover {
-    background: #e2e8f0;
-    color: #4a5568;
-}
-
-.bookmark-btn.delete:hover {
-    background: #fed7d7;
-    color: #e53e3e;
-}
+.bookmark-item:hover { background: #e2e8f0; transform: translateX(5px); }
+.bookmark-info { flex: 1; }
+.bookmark-title { font-weight: 500; color: #4a5568; margin-bottom: 4px; }
+.bookmark-reference { font-size: 14px; color: #718096; }
+.bookmark-actions { display: flex; gap: 8px; }
+.bookmark-btn { background: none; border: none; padding: 6px; border-radius: 4px; cursor: pointer; color: #718096; transition: all 0.3s ease; }
+.bookmark-btn:hover { background: #e2e8f0; color: #4a5568; }
+.bookmark-btn.delete:hover { background: #fed7d7; color: #e53e3e; }
 
 .empty-message {
     text-align: center;
@@ -962,7 +881,7 @@ hr {
 .welcome-content h2 {
     color: #2d3748;
     font-size: 2em;
-    font-weight: 600;
+    font-weight: 500;
     margin-bottom: 15px;
 }
 
@@ -1008,87 +927,50 @@ hr {
     font-weight: 500;
 }
 
+
+
+
+
+/* 深色主題統一設定 */
+body.dark-theme .welcome-content { background: rgba(45, 55, 72, 0.95); color: #e2e8f0; }
+body.dark-theme .welcome-content h2 { color: #e2e8f0; }
+body.dark-theme .welcome-content p { color: #a0aec0; }
+body.dark-theme .feature-item { background: rgba(79, 209, 199, 0.15); }
+body.dark-theme .feature-item:hover { background: rgba(79, 209, 199, 0.2); }
+body.dark-theme .feature-item span { color: #a0aec0; }
+body.dark-theme .version-label { color: #68d391; opacity: 0.95; }
+body.dark-theme .verse-text { color: #f7fafc; font-weight: 400; }
+body.dark-theme .version-label::before { color: #68d391; }
+
+/* hover效果 */
+.verse-item:hover .verse-text { color: #000; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); }
+body.dark-theme .verse-item:hover .verse-text { color: #fff; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4); }
+/* 經文字型統一設定 - 使用簡潔選擇器 */
+.verse-item .verse-text {
+    font-family: 'Iansui', 'Noto Sans TC', 'Source Han Sans TC', 'Microsoft JhengHei', '微軟正黑體', sans-serif !important;
+    font-size: 19px !important;
+    font-weight: 400 !important;
+    line-height: 1.75 !important;
+    letter-spacing: 0.025em !important;
+    color: #1a202c !important;
+    text-align: justify !important;
+    font-style: normal !important;
+    font-variant: normal !important;
+    text-rendering: optimizeLegibility !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+}
+
+/* 深色主題 */
+body.dark-theme .verse-item .verse-text {
+    color: #f7fafc !important;
+}
+
 /* 響應式設計 */
-@media (max-width: 768px) {
-    .welcome-content {
-        padding: 30px 15px;
-    }
-    
-    .welcome-icon {
-        font-size: 3em;
-    }
-    
-    .welcome-content h2 {
-        font-size: 1.6em;
-    }
-    
-    .welcome-features {
-        gap: 20px;
-    }
-    
-    .feature-item {
-        min-width: 100px;
-        padding: 15px;
-    }
+@media (min-width: 769px) and (max-width: 1024px) {
+    .verse-item .verse-text { line-height: 1.7 !important; letter-spacing: 0.024em !important; }
 }
 
-@media (max-width: 480px) {
-    .welcome-content {
-        padding: 25px 10px;
-    }
-    
-    .welcome-icon {
-        font-size: 2.5em;
-    }
-    
-    .welcome-content h2 {
-        font-size: 1.4em;
-    }
-    
-    .welcome-content p {
-        font-size: 1em;
-    }
-    
-    .welcome-features {
-        gap: 15px;
-    }
-    
-    .feature-item {
-        min-width: 80px;
-        padding: 12px;
-    }
-    
-    .feature-item i {
-        font-size: 1.2em;
-    }
-    
-    .feature-item span {
-        font-size: 12px;
-    }
-}
 
-/* 深色主題適配 */
-body.dark-theme .welcome-content {
-    background: rgba(45, 55, 72, 0.95);
-    color: #e2e8f0;
-}
 
-body.dark-theme .welcome-content h2 {
-    color: #e2e8f0;
-}
 
-body.dark-theme .welcome-content p {
-    color: #a0aec0;
-}
-
-body.dark-theme .feature-item {
-    background: rgba(79, 209, 199, 0.15);
-}
-
-body.dark-theme .feature-item:hover {
-    background: rgba(79, 209, 199, 0.2);
-}
-
-body.dark-theme .feature-item span {
-    color: #a0aec0;
-}
