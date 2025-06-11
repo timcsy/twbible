@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>台語聖經朗讀</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Vue.js 3 CDN -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+    <div id="app">
+        <div class="container">
+            <header class="header">
+                <div class="header-top">
+                    <h1><i class="fas fa-book"></i> 台語聖經朗讀</h1>
+                    <div class="header-actions">
+                        <button @click="showHelp = true" class="btn btn-icon" title="快捷鍵說明">
+                            <i class="fas fa-question"></i>
+                        </button>
+                        <button @click="showBookmarks = true" :disabled="!currentVerse" class="btn btn-icon" title="書籤">
+                            <i class="fas fa-bookmark"></i>
+                        </button>
+                        <button @click="toggleTheme" class="btn btn-icon" title="切換主題">
+                            <i :class="isDarkTheme ? 'fas fa-sun' : 'fas fa-moon'"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <div class="search-group">
+                        <select v-model="selectedBook" @change="onBookChange" class="select-control">
+                            <option value="">選擇書卷...</option>
+                            <option v-for="(bookInfo, key) in bibleBooks" :key="key" :value="key">
+                                {{ bookInfo.chinese }}
+                            </option>
+                        </select>
+                        <div class="input-group">
+                            <select v-model="inputChapter" @change="onChapterChange" class="select-control" :disabled="!selectedBook">
+                                <option value="">選擇章...</option>
+                                <option v-for="chapter in availableChapters" :key="chapter" :value="chapter">
+                                    第{{ chapter }}章
+                                </option>
+                            </select>
+                            <select v-model="inputVerse" @change="loadVerse" class="select-control" :disabled="!selectedBook || !inputChapter">
+                                <option value="">選擇節...</option>
+                                <option v-for="verse in availableVerses" :key="verse" :value="verse">
+                                    第{{ verse }}節
+                                </option>
+                            </select>
+                        </div>
+                        <button @click="loadVerse" :disabled="!selectedBook || !inputChapter" class="btn btn-primary">
+                            <i class="fas fa-search"></i>
+                            <span class="btn-text">載入</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <main class="main-content" v-if="currentVerse">
+                <!-- 聖經內容區 - 移除額外包裝，最大化空間利用 -->
+                <div class="versions-container">
+                    <!-- 白話字 -->
+                    <div class="verse-item">
+                        <span class="version-label">白話字</span>
+                        <div class="verse-text">{{ currentVerse.versions.bklcl || '無資料' }}</div>
+                    </div>
+                    
+                    <hr class="version-divider">
+                    
+                    <!-- 台語羅馬字 -->
+                    <div class="verse-item">
+                        <span class="version-label">台語羅馬字</span>
+                        <div class="verse-text">{{ currentVerse.versions.bklhl || '無資料' }}</div>
+                    </div>
+                    
+                    <hr class="version-divider">
+                    
+                    <!-- 台語漢字 -->
+                    <div class="verse-item">
+                        <span class="version-label">台語漢字</span>
+                        <div class="verse-text">{{ currentVerse.versions.tghg || '無資料' }}</div>
+                    </div>
+                    
+                    <hr class="version-divider">
+                    
+                    <!-- 和合本 -->
+                    <div class="verse-item">
+                        <span class="version-label">和合本</span>
+                        <div class="verse-text">{{ currentVerse.versions.unv || '無資料' }}</div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- 歡迎畫面 -->
+            <main class="welcome-content" v-else>
+                <div class="welcome-message">
+                    <div class="welcome-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <h2>歡迎使用台語聖經朗讀</h2>
+                    <p>請在上方選擇書卷和章節，開始您的聖經朗讀體驗</p>
+                    <div class="welcome-features">
+                        <div class="feature-item">
+                            <i class="fas fa-language"></i>
+                            <span>多種台語版本</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-play"></i>
+                            <span>音頻朗讀</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-bookmark"></i>
+                            <span>書籤管理</span>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- 播放器獨立於容器外 -->
+        <div class="floating-player">
+            <div class="player-main">
+                <!-- 播放控制 -->
+                <button @click="togglePlay" :disabled="!audioSrc" class="btn-play" title="播放/暫停">
+                    <i :class="isPlaying ? 'fas fa-pause' : 'fas fa-play'"></i>
+                </button>
+                
+                <!-- 資訊區域 -->
+                <div class="player-info">
+                    <div class="book-title">{{ currentBookName || '台語聖經朗讀' }}</div>
+                    <div class="verse-ref" v-if="currentVerseReference">{{ currentVerseReference }}</div>
+                    <div class="verse-ref" v-else>請選擇書卷和章節</div>
+                </div>
+                
+                <!-- 導航按鈕 -->
+                <div class="nav-buttons">
+                    <button @click="previousChapter" :disabled="!canGoPreviousChapter" class="btn-nav" title="上一章">
+                        <i class="fas fa-fast-backward"></i>
+                    </button>
+                    <button @click="nextChapter" :disabled="!canGoNextChapter" class="btn-nav" title="下一章">
+                        <i class="fas fa-fast-forward"></i>
+                    </button>
+                    <button @click="previousVerse" :disabled="!canGoPrevious" class="btn-nav" title="上一節">
+                        <i class="fas fa-step-backward"></i>
+                    </button>
+                    <button @click="nextVerse" :disabled="!canGoNext" class="btn-nav" title="下一節">
+                        <i class="fas fa-step-forward"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 進度條 -->
+            <div class="progress-section">
+                <div class="progress-bar" @click="seekAudio" v-if="audioSrc">
+                    <div class="progress-fill" :style="{ width: progressPercent + '%' }"></div>
+                </div>
+                <div class="progress-bar progress-bar-placeholder" v-else>
+                    <div class="progress-fill" style="width: 0%"></div>
+                </div>
+                <div class="time-display" v-if="audioSrc">
+                    <span>{{ formatTime(currentTime) }}</span>
+                    <span>{{ formatTime(duration) }}</span>
+                </div>
+                <div class="time-display time-display-placeholder" v-else>
+                    <span>00:00</span>
+                    <span>00:00</span>
+                </div>
+            </div>
+            
+            <audio ref="audioPlayer" @loadedmetadata="onAudioLoaded" @timeupdate="onTimeUpdate" 
+                   @ended="onAudioEnded" @play="isPlaying = true" @pause="isPlaying = false"
+                   @error="onAudioError" @loadstart="onAudioLoadStart" @canplay="onAudioCanPlay"></audio>
+        </div>
+
+        <!-- 快捷鍵說明彈窗 -->
+        <div v-show="showHelp" class="modal" @click.self="showHelp = false">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-keyboard"></i> 快捷鍵說明</h3>
+                    <button class="modal-close" @click="showHelp = false">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="shortcut-list">
+                        <div class="shortcut-item">
+                            <kbd>←</kbd>
+                            <span>上一節</span>
+                        </div>
+                        <div class="shortcut-item">
+                            <kbd>→</kbd>
+                            <span>下一節</span>
+                        </div>
+                        <div class="shortcut-item">
+                            <kbd>Ctrl + ←</kbd>
+                            <span>上一章</span>
+                        </div>
+                        <div class="shortcut-item">
+                            <kbd>Ctrl + →</kbd>
+                            <span>下一章</span>
+                        </div>
+                        <div class="shortcut-item">
+                            <kbd>Space</kbd>
+                            <span>播放/暫停</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 書籤管理彈窗 -->
+        <div v-show="showBookmarks" class="modal" @click.self="showBookmarks = false">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-bookmark"></i> 書籤管理</h3>
+                    <button class="modal-close" @click="showBookmarks = false">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="bookmark-current" v-if="currentVerse">
+                        <h4>加入書籤</h4>
+                        <div class="bookmark-form">
+                            <input type="text" v-model="bookmarkName" class="input-control" placeholder="書籤名稱（可選）">
+                            <button @click="addBookmark" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> 新增書籤
+                            </button>
+                        </div>
+                        <hr>
+                    </div>
+                    <div class="bookmark-list-section">
+                        <h4>已儲存的書籤</h4>
+                        <div class="bookmark-list">
+                            <p v-if="bookmarks.length === 0" class="empty-message">尚無書籤</p>
+                            <div v-for="(bookmark, index) in bookmarks" :key="index" class="bookmark-item">
+                                <div class="bookmark-info">
+                                    <div class="bookmark-title">{{ bookmark.name || bookmark.reference }}</div>
+                                    <div class="bookmark-reference">{{ bookmark.reference }}</div>
+                                </div>
+                                <div class="bookmark-actions">
+                                    <button @click="loadBookmark(bookmark)" class="btn btn-small btn-primary">載入</button>
+                                    <button @click="removeBookmark(index)" class="btn btn-small btn-danger">刪除</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div v-show="loading" class="loading">
+            <div class="spinner"></div>
+            <p>載入中...</p>
+        </div>
+    </div>
+
+    <script src="data-loader.js"></script>
+    <script src="vue-app.js"></script>
+</body>
+</html>
