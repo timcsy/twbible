@@ -137,6 +137,11 @@ body {
 .btn-nav:hover:not(:disabled) { background: #38b2ac; }
 .btn-secondary:hover:not(:disabled) { background: #4a5568; }
 
+/* 額外按鈕樣式 */
+.btn-danger { background: #e53e3e; color: white; }
+.btn-danger:hover:not(:disabled) { background: #c53030; transform: translateY(-1px); }
+.btn-small { padding: 8px 16px; font-size: 14px; }
+
 /* 圖示按鈕樣式 */
 .btn-icon {
     width: 40px;
@@ -637,10 +642,7 @@ body {
     font-weight: 600;
 }
 
-/* 深色主題下的版本標籤裝飾 */
-body.dark-theme .version-label::before {
-    color: #68d391;
-}
+
 
 /* 基本 verse-text 樣式優化 */
 .verse-text {
@@ -648,10 +650,8 @@ body.dark-theme .version-label::before {
     transition: all 0.2s ease;
 }
 
-/* 深色主題與hover效果 */
-body.dark-theme .verse-text { text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); }
+/* hover效果 */
 .verse-item:hover .verse-text { color: #000; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); }
-body.dark-theme .verse-item:hover .verse-text { color: #fff; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4); }
 
 /* 高DPI螢幕優化 */
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
@@ -931,20 +931,122 @@ hr {
 
 
 
-/* 深色主題統一設定 */
+/* 深色主題完整設定 */
+/* 主體與背景 */
+body.dark-theme {
+    background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+    color: #e2e8f0;
+}
+
+/* 頭部樣式 */
+body.dark-theme .header {
+    background: rgba(45, 55, 72, 0.95);
+    color: #e2e8f0;
+}
+body.dark-theme .header h1 { color: #f7fafc; }
+body.dark-theme .header h1 i { color: #68d391; }
+
+/* 主要內容區域 */
+body.dark-theme .main-content,
+body.dark-theme .bible-content {
+    background: rgba(45, 55, 72, 0.95);
+    color: #e2e8f0;
+}
+
+/* 輸入控制項 */
+body.dark-theme .select-control,
+body.dark-theme .input-control {
+    background: #2d3748;
+    border-color: #4a5568;
+    color: #f7fafc;
+}
+body.dark-theme .select-control:focus,
+body.dark-theme .input-control:focus {
+    border-color: #68d391;
+    box-shadow: 0 0 0 3px rgba(104, 211, 145, 0.1);
+}
+
+/* 按鈕樣式 */
+body.dark-theme .btn-icon {
+    background: rgba(113, 128, 150, 0.2);
+    color: #a0aec0;
+}
+body.dark-theme .btn-icon:hover:not(:disabled) {
+    background: rgba(104, 211, 145, 0.2);
+    color: #68d391;
+}
+
+/* 播放器樣式 */
+body.dark-theme .floating-player {
+    background: rgba(26, 32, 44, 0.95);
+    border-top-color: #4a5568;
+}
+body.dark-theme .book-title { color: #f7fafc; }
+body.dark-theme .verse-ref { color: #a0aec0; }
+
+/* 進度條 */
+body.dark-theme .progress-bar { background: #4a5568; }
+body.dark-theme .progress-fill { background: linear-gradient(90deg, #68d391, #38b2ac); }
+body.dark-theme .time-display { color: #a0aec0; }
+
+/* 模態框樣式 */
+body.dark-theme .modal { background: rgba(0, 0, 0, 0.9); }
+body.dark-theme .modal-content { background: #2d3748; color: #e2e8f0; }
+body.dark-theme .modal-header { border-bottom-color: #4a5568; }
+body.dark-theme .modal-header h3 { color: #f7fafc; }
+body.dark-theme .modal-header h3 i { color: #68d391; }
+body.dark-theme .modal-close { color: #a0aec0; }
+body.dark-theme .modal-close:hover { background: #4a5568; color: #f7fafc; }
+
+/* 快捷鍵樣式 */
+body.dark-theme .shortcut-item { background: #4a5568; border-left-color: #68d391; }
+body.dark-theme kbd { background: #1a202c; color: #f7fafc; }
+body.dark-theme .shortcut-item span { color: #e2e8f0; }
+
+/* 書籤樣式 */
+body.dark-theme .bookmark-item { background: #4a5568; border-left-color: #68d391; }
+body.dark-theme .bookmark-item:hover { background: #718096; }
+body.dark-theme .bookmark-title { color: #f7fafc; }
+body.dark-theme .bookmark-reference { color: #a0aec0; }
+body.dark-theme .bookmark-btn { color: #a0aec0; }
+body.dark-theme .bookmark-btn:hover { background: #1a202c; color: #f7fafc; }
+body.dark-theme .bookmark-btn.delete:hover { background: #f56565; color: #fff; }
+body.dark-theme .empty-message { color: #a0aec0; }
+
+/* HR分隔線 */
+body.dark-theme hr,
+body.dark-theme .version-divider { border-top-color: #4a5568; }
+
+/* 當前參考資訊 */
+body.dark-theme .current-reference h2 { color: #f7fafc; }
+
+/* 歡迎畫面 */
 body.dark-theme .welcome-content { background: rgba(45, 55, 72, 0.95); color: #e2e8f0; }
 body.dark-theme .welcome-content h2 { color: #e2e8f0; }
 body.dark-theme .welcome-content p { color: #a0aec0; }
+body.dark-theme .welcome-icon { color: #68d391; }
 body.dark-theme .feature-item { background: rgba(79, 209, 199, 0.15); }
 body.dark-theme .feature-item:hover { background: rgba(79, 209, 199, 0.2); }
 body.dark-theme .feature-item span { color: #a0aec0; }
+
+/* 版本標籤與經文 */
 body.dark-theme .version-label { color: #68d391; opacity: 0.95; }
-body.dark-theme .verse-text { color: #f7fafc; font-weight: 400; }
 body.dark-theme .version-label::before { color: #68d391; }
+body.dark-theme .verse-text { color: #f7fafc !important; font-weight: 400; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); }
+body.dark-theme .verse-item .verse-text { color: #f7fafc !important; }
+body.dark-theme .verse-item:hover .verse-text { color: #fff !important; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4); }
+
+/* Loading Spinner深色主題 */
+body.dark-theme .loading { background: rgba(0, 0, 0, 0.9); }
+body.dark-theme .spinner { border-color: #4a5568; border-top-color: #68d391; }
+body.dark-theme .loading p { color: #f7fafc; }
+
+/* Network Status深色主題 */
+body.dark-theme .network-status.online { background: rgba(104, 211, 145, 0.1); color: #68d391; border-color: rgba(104, 211, 145, 0.3); }
+body.dark-theme .network-status.offline { background: rgba(245, 101, 101, 0.1); color: #f56565; border-color: rgba(245, 101, 101, 0.3); }
 
 /* hover效果 */
 .verse-item:hover .verse-text { color: #000; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); }
-body.dark-theme .verse-item:hover .verse-text { color: #fff; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4); }
 /* 經文字型統一設定 - 使用簡潔選擇器 */
 .verse-item .verse-text {
     font-family: 'Iansui', 'Noto Sans TC', 'Source Han Sans TC', 'Microsoft JhengHei', '微軟正黑體', sans-serif !important;
@@ -959,11 +1061,6 @@ body.dark-theme .verse-item:hover .verse-text { color: #fff; text-shadow: 0 2px 
     text-rendering: optimizeLegibility !important;
     -webkit-font-smoothing: antialiased !important;
     -moz-osx-font-smoothing: grayscale !important;
-}
-
-/* 深色主題 */
-body.dark-theme .verse-item .verse-text {
-    color: #f7fafc !important;
 }
 
 /* 響應式設計 */
