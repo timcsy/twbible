@@ -42,10 +42,8 @@ body {
 }
 
 .header-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+    text-align: center;
+    margin-bottom: 15px;
 }
 
 .header h1 {
@@ -64,6 +62,8 @@ body {
     display: flex;
     gap: 8px;
     align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
 }
 
 .controls {
@@ -708,7 +708,6 @@ body {
 
 /* Modal Styles */
 .modal {
-    display: none;
     position: fixed;
     top: 0;
     left: 0;
@@ -716,6 +715,7 @@ body {
     height: 100%;
     background: rgba(0, 0, 0, 0.8);
     z-index: 2000;
+    display: flex;
     justify-content: center;
     align-items: center;
 }
@@ -854,6 +854,117 @@ hr {
     border: none;
     border-top: 1px solid #e2e8f0;
     margin: 20px 0;
+}
+
+/* Tab Container */
+.tab-container {
+    display: flex;
+    gap: 0;
+    margin-bottom: 20px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 12px 16px;
+    border: none;
+    background: #f8f9fa;
+    color: #718096;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.tab-btn:hover {
+    background: #e2e8f0;
+    color: #4a5568;
+}
+
+.tab-btn.active {
+    background: #38b2ac;
+    color: white;
+}
+
+.tab-btn.active:hover {
+    background: #319795;
+}
+
+/* History Styles */
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.history-header h4 {
+    margin: 0;
+    color: #4a5568;
+}
+
+.history-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.history-group {
+    margin-bottom: 16px;
+}
+
+.history-date-header {
+    font-size: 13px;
+    font-weight: 600;
+    color: #38b2ac;
+    margin-bottom: 8px;
+    padding: 4px 8px;
+    background: rgba(56, 178, 172, 0.1);
+    border-radius: 4px;
+    text-align: center;
+}
+
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: #f1f5f9;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    border-left: 4px solid #6366f1;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.history-item:hover {
+    background: #e2e8f0;
+    transform: translateX(5px);
+}
+
+.history-info {
+    flex: 1;
+}
+
+.history-reference {
+    font-weight: 500;
+    color: #4a5568;
+    margin-bottom: 4px;
+}
+
+.history-time {
+    font-size: 12px;
+    color: #718096;
+}
+
+.history-actions {
+    display: flex;
+    gap: 8px;
 }
 
 /* 歡迎畫面樣式 */
@@ -1016,6 +1127,21 @@ body.dark-theme .empty-message { color: #a0aec0; }
 /* HR分隔線 */
 body.dark-theme hr,
 body.dark-theme .version-divider { border-top-color: #4a5568; }
+
+/* Tab Container 深色主題 */
+body.dark-theme .tab-container { border-color: #4a5568; }
+body.dark-theme .tab-btn { background: #4a5568; color: #a0aec0; }
+body.dark-theme .tab-btn:hover { background: #718096; color: #f7fafc; }
+body.dark-theme .tab-btn.active { background: #68d391; color: #1a202c; }
+body.dark-theme .tab-btn.active:hover { background: #48bb78; }
+
+/* History 深色主題 */
+body.dark-theme .history-header h4 { color: #f7fafc; }
+body.dark-theme .history-date-header { color: #68d391; background: rgba(104, 211, 145, 0.1); }
+body.dark-theme .history-item { background: #4a5568; border-left-color: #9f7aea; }
+body.dark-theme .history-item:hover { background: #718096; }
+body.dark-theme .history-reference { color: #f7fafc; }
+body.dark-theme .history-time { color: #a0aec0; }
 
 /* 當前參考資訊 */
 body.dark-theme .current-reference h2 { color: #f7fafc; }

@@ -183,6 +183,10 @@ createApp({
             bookmarks: [],
             bookmarkName: '',
             
+            // 歷史紀錄
+            history: [],
+            showHistory: false, // 預設顯示書籤頁面
+            
             // 資料載入器
             dataLoader: null
         };
@@ -260,6 +264,48 @@ createApp({
                 verses.push(i);
             }
             return verses;
+        },
+        
+        // 格式化的歷史紀錄（按日期分組）
+        groupedHistory() {
+            if (!this.history || this.history.length === 0) return [];
+            
+            const groups = {};
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
+            
+            this.history.forEach(item => {
+                const itemDate = new Date(item.timestamp);
+                const itemDay = new Date(itemDate.getFullYear(), itemDate.getMonth(), itemDate.getDate());
+                
+                let groupKey;
+                if (itemDay.getTime() === today.getTime()) {
+                    groupKey = '今天';
+                } else if (itemDay.getTime() === yesterday.getTime()) {
+                    groupKey = '昨天';
+                } else {
+                    groupKey = itemDate.toLocaleDateString('zh-TW');
+                }
+                
+                if (!groups[groupKey]) {
+                    groups[groupKey] = [];
+                }
+                groups[groupKey].push(item);
+            });
+            
+            // 轉換為數組並排序
+            return Object.keys(groups).map(date => ({
+                date: date,
+                items: groups[date]
+            })).sort((a, b) => {
+                // 特殊處理今天和昨天
+                if (a.date === '今天') return -1;
+                if (b.date === '今天') return 1;
+                if (a.date === '昨天') return -1;
+                if (b.date === '昨天') return 1;
+                return new Date(b.date) - new Date(a.date);
+            });
         }
     },
     
@@ -267,6 +313,7 @@ createApp({
         this.initializeApp();
         this.setupKeyboardShortcuts();
         this.loadBookmarks();
+        this.loadHistoryFromStorage();
         this.loadTheme();
         
         // 預設載入太1:1用於測試
@@ -417,6 +464,9 @@ createApp({
                 this.currentChapter = chapter;
                 this.currentVerse = verseData;
                 this.currentChapterData = chapterData; // 儲存章節數據
+                
+                // 添加到歷史紀錄
+                this.addToHistory(book, chapter, verse);
                 
                 // 檢查是否需要載入新的音檔（章節改變時）
                 if (this.currentAudioBook !== book || this.currentAudioChapter !== chapter) {
@@ -740,6 +790,81 @@ createApp({
             }
         },
         
+        // 歷史紀錄功能
+        addToHistory(book, chapter, verse) {
+            const historyItem = {
+                book: book,
+                chapter: chapter,
+                verse: verse,
+                reference: `${this.bibleBooks[book]?.chinese || book} ${chapter}:${verse}`,
+                timestamp: Date.now(),
+                date: new Date().toLocaleString('zh-TW')
+            };
+            
+            // 檢查是否已存在相同的紀錄，如果存在則更新時間戳
+            const existingIndex = this.history.findIndex(item => 
+                item.book === book && item.chapter === chapter && item.verse === verse
+            );
+            
+            if (existingIndex !== -1) {
+                // 更新現有紀錄的時間戳並移到最前面
+                this.history.splice(existingIndex, 1);
+            }
+            
+            // 將新紀錄加到最前面
+            this.history.unshift(historyItem);
+            
+            // 限制歷史紀錄數量（最多保留100筆）
+            if (this.history.length > 100) {
+                this.history = this.history.slice(0, 100);
+            }
+            
+            this.saveHistory();
+        },
+        
+        async loadHistory(historyItem) {
+            this.selectedBook = historyItem.book;
+            this.inputChapter = historyItem.chapter;
+            this.inputVerse = historyItem.verse;
+            this.showBookmarks = false;
+            
+            await this.loadVerse();
+        },
+        
+        removeHistoryItem(index) {
+            if (confirm('確定要刪除這個歷史紀錄嗎？')) {
+                this.history.splice(index, 1);
+                this.saveHistory();
+            }
+        },
+        
+        clearHistory() {
+            if (confirm('確定要清空所有歷史紀錄嗎？')) {
+                this.history = [];
+                this.saveHistory();
+            }
+        },
+        
+        saveHistory() {
+            try {
+                localStorage.setItem('taiwanese-bible-history', JSON.stringify(this.history));
+            } catch (error) {
+                console.error('儲存歷史紀錄失敗:', error);
+            }
+        },
+        
+        loadHistoryFromStorage() {
+            try {
+                const saved = localStorage.getItem('taiwanese-bible-history');
+                if (saved) {
+                    this.history = JSON.parse(saved);
+                }
+            } catch (error) {
+                console.error('載入歷史紀錄失敗:', error);
+                this.history = [];
+            }
+        },
+        
         // 主題切換
         toggleTheme() {
             this.isDarkTheme = !this.isDarkTheme;
@@ -764,6 +889,30 @@ createApp({
                 }
             } catch (error) {
                 console.error('載入主題設定失敗:', error);
+            }
+        },
+        
+        // 格式化相對時間
+        formatRelativeTime(timestamp) {
+            const now = Date.now();
+            const diff = now - timestamp;
+            
+            // 轉換為分鐘
+            const minutes = Math.floor(diff / (1000 * 60));
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            
+            if (minutes < 1) {
+                return '剛剛';
+            } else if (minutes < 60) {
+                return `${minutes}分鐘前`;
+            } else if (hours < 24) {
+                return `${hours}小時前`;
+            } else if (days < 7) {
+                return `${days}天前`;
+            } else {
+                // 超過一週顯示具體日期
+                return new Date(timestamp).toLocaleDateString('zh-TW');
             }
         }
     }

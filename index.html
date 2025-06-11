@@ -17,17 +17,18 @@
             <header class="header">
                 <div class="header-top">
                     <h1><i class="fas fa-book"></i> 台語聖經朗讀</h1>
-                    <div class="header-actions">
-                        <button @click="showHelp = true" class="btn btn-icon" title="快捷鍵說明">
-                            <i class="fas fa-question"></i>
-                        </button>
-                        <button @click="showBookmarks = true" :disabled="!currentVerse" class="btn btn-icon" title="書籤">
-                            <i class="fas fa-bookmark"></i>
-                        </button>
-                        <button @click="toggleTheme" class="btn btn-icon" title="切換主題">
-                            <i :class="isDarkTheme ? 'fas fa-sun' : 'fas fa-moon'"></i>
-                        </button>
-                    </div>
+                </div>
+                
+                <div class="header-actions">
+                    <button @click="showHelp = true" class="btn btn-icon" title="快捷鍵說明">
+                        <i class="fas fa-question"></i>
+                    </button>
+                    <button @click="showBookmarks = true" :disabled="!currentVerse" class="btn btn-icon" title="書籤">
+                        <i class="fas fa-bookmark"></i>
+                    </button>
+                    <button @click="toggleTheme" class="btn btn-icon" title="切換主題">
+                        <i :class="isDarkTheme ? 'fas fa-sun' : 'fas fa-moon'"></i>
+                    </button>
                 </div>
                 
                 <div class="controls">
@@ -214,32 +215,71 @@
         <div v-show="showBookmarks" class="modal" @click.self="showBookmarks = false">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3><i class="fas fa-bookmark"></i> 書籤管理</h3>
+                    <h3><i class="fas fa-bookmark"></i> 書籤與歷史</h3>
                     <button class="modal-close" @click="showBookmarks = false">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <div class="bookmark-current" v-if="currentVerse">
-                        <h4>加入書籤</h4>
-                        <div class="bookmark-form">
-                            <input type="text" v-model="bookmarkName" class="input-control" placeholder="書籤名稱（可選）">
-                            <button @click="addBookmark" class="btn btn-primary">
-                                <i class="fas fa-plus"></i> 新增書籤
+                    <!-- 分頁標籤 -->
+                    <div class="tab-container">
+                        <button @click="showHistory = false" :class="['tab-btn', { active: !showHistory }]">
+                            <i class="fas fa-bookmark"></i> 書籤
+                        </button>
+                        <button @click="showHistory = true" :class="['tab-btn', { active: showHistory }]">
+                            <i class="fas fa-history"></i> 歷史紀錄
+                        </button>
+                    </div>
+                    
+                    <!-- 書籤內容 -->
+                    <div v-show="!showHistory">
+                        <div class="bookmark-current" v-if="currentVerse">
+                            <h4>加入書籤</h4>
+                            <div class="bookmark-form">
+                                <input type="text" v-model="bookmarkName" class="input-control" placeholder="書籤名稱（可選）">
+                                <button @click="addBookmark" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> 新增書籤
+                                </button>
+                            </div>
+                            <hr>
+                        </div>
+                        <div class="bookmark-list-section">
+                            <h4>已儲存的書籤</h4>
+                            <div class="bookmark-list">
+                                <p v-if="bookmarks.length === 0" class="empty-message">尚無書籤</p>
+                                <div v-for="(bookmark, index) in bookmarks" :key="index" class="bookmark-item">
+                                    <div class="bookmark-info">
+                                        <div class="bookmark-title">{{ bookmark.name || bookmark.reference }}</div>
+                                        <div class="bookmark-reference">{{ bookmark.reference }}</div>
+                                    </div>
+                                    <div class="bookmark-actions">
+                                        <button @click="loadBookmark(bookmark)" class="btn btn-small btn-primary">載入</button>
+                                        <button @click="removeBookmark(index)" class="btn btn-small btn-danger">刪除</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 歷史紀錄內容 -->
+                    <div v-show="showHistory">
+                        <div class="history-header">
+                            <h4>閱讀歷史紀錄</h4>
+                            <button @click="clearHistory" v-if="history.length > 0" class="btn btn-small btn-danger">
+                                <i class="fas fa-trash"></i> 清空歷史
                             </button>
                         </div>
-                        <hr>
-                    </div>
-                    <div class="bookmark-list-section">
-                        <h4>已儲存的書籤</h4>
-                        <div class="bookmark-list">
-                            <p v-if="bookmarks.length === 0" class="empty-message">尚無書籤</p>
-                            <div v-for="(bookmark, index) in bookmarks" :key="index" class="bookmark-item">
-                                <div class="bookmark-info">
-                                    <div class="bookmark-title">{{ bookmark.name || bookmark.reference }}</div>
-                                    <div class="bookmark-reference">{{ bookmark.reference }}</div>
-                                </div>
-                                <div class="bookmark-actions">
-                                    <button @click="loadBookmark(bookmark)" class="btn btn-small btn-primary">載入</button>
-                                    <button @click="removeBookmark(index)" class="btn btn-small btn-danger">刪除</button>
+                        <div class="history-list">
+                            <p v-if="history.length === 0" class="empty-message">尚無歷史紀錄</p>
+                            <div v-for="group in groupedHistory" :key="group.date" class="history-group">
+                                <div class="history-date-header">{{ group.date }}</div>
+                                <div v-for="(item, index) in group.items" :key="item.timestamp" class="history-item">
+                                    <div class="history-info">
+                                        <div class="history-reference">{{ item.reference }}</div>
+                                        <div class="history-time">{{ formatRelativeTime(item.timestamp) }}</div>
+                                    </div>
+                                    <div class="history-actions">
+                                        <button @click="loadHistory(item)" class="btn btn-small btn-primary">載入</button>
+                                        <button @click="removeHistoryItem(history.indexOf(item))" class="btn btn-small btn-danger">刪除</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
