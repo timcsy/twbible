@@ -104,3 +104,8 @@ v run crawler.v       # 下載全部66卷書
 - [V 語言](https://vlang.io/) - 用於運行爬蟲
 - 現代網頁瀏覽器 - 支援 ES6+ 和 Web Audio API
 - 本地 HTTP 伺服器 - Python、Node.js 或 PHP
+
+## 參考資料
+
+- [信望愛聖經閱讀](https://bible.fhl.net/new/read.php?chineses=%E5%A4%AA&strongflag=0&SSS=0&nodic=0&VERSION1=unv&VERSION16=bklcl&VERSION27=tghg&VERSION32=bklcl&VERSION33=bklhl&TABFLAG=1&nodic=0&chap=1)
+- [台語台南腔有聲聖經](https://bkbible.fhl.net/new/audio_hb.php?version=15)
