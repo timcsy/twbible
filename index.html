@@ -23,31 +23,15 @@
                     <button @click="showHelp = true" class="btn btn-icon" title="快捷鍵說明">
                         <i class="fas fa-question"></i>
                     </button>
-                    <button @click="showBookmarks = true" :disabled="!currentVerse" class="btn btn-icon" title="書籤">
+                    <button @click="showBookmarks = true" class="btn btn-icon" title="書籤">
                         <i class="fas fa-bookmark"></i>
                     </button>
-                    <button @click="toggleSpeedSettings" class="btn btn-icon" title="播放速度設定">
+                    <button @click="showSpeedSettings = true" class="btn btn-icon" title="播放速度設定">
                         <i class="fas fa-tachometer-alt"></i>
                     </button>
                     <button @click="toggleTheme" class="btn btn-icon" title="切換主題">
                         <i :class="isDarkTheme ? 'fas fa-sun' : 'fas fa-moon'"></i>
                     </button>
-                </div>
-                
-                <!-- 播放速度設定下拉選單 -->
-                <div v-show="showSpeedSettings" class="speed-settings">
-                    <div class="speed-settings-header">
-                        <h4>播放速度</h4>
-                        <span class="current-speed">{{ playbackRate }}x</span>
-                    </div>
-                    <div class="speed-options">
-                        <button @click="setPlaybackRate(0.5)" :class="['speed-btn', { active: playbackRate === 0.5 }]">0.5x</button>
-                        <button @click="setPlaybackRate(0.75)" :class="['speed-btn', { active: playbackRate === 0.75 }]">0.75x</button>
-                        <button @click="setPlaybackRate(1.0)" :class="['speed-btn', { active: playbackRate === 1.0 }]">1.0x</button>
-                        <button @click="setPlaybackRate(1.25)" :class="['speed-btn', { active: playbackRate === 1.25 }]">1.25x</button>
-                        <button @click="setPlaybackRate(1.5)" :class="['speed-btn', { active: playbackRate === 1.5 }]">1.5x</button>
-                        <button @click="setPlaybackRate(2.0)" :class="['speed-btn', { active: playbackRate === 2.0 }]">2.0x</button>
-                    </div>
                 </div>
                 
                 <div class="controls">
@@ -254,7 +238,7 @@
                             <h4>加入書籤</h4>
                             <div class="bookmark-form">
                                 <input type="text" v-model="bookmarkName" class="input-control" placeholder="書籤名稱（可選）">
-                                <button @click="addBookmark" class="btn btn-primary">
+                                <button @click="addBookmark" :disabled="!currentVerse" class="btn btn-primary">
                                     <i class="fas fa-plus"></i> 新增書籤
                                 </button>
                             </div>
@@ -302,6 +286,48 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 播放速度設定彈窗 -->
+        <div v-show="showSpeedSettings" class="modal" @click.self="showSpeedSettings = false">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3><i class="fas fa-tachometer-alt"></i> 播放速度設定</h3>
+                    <button class="modal-close" @click="showSpeedSettings = false">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="speed-current-display">
+                        <div class="current-speed-label">目前播放速度</div>
+                        <div class="current-speed-value">{{ playbackRate }}x</div>
+                    </div>
+                    <div class="speed-options-grid">
+                        <button @click="setPlaybackRate(0.5)" :class="['speed-modal-btn', { active: playbackRate === 0.5 }]">
+                            <div class="speed-value">0.5x</div>
+                            <div class="speed-desc">較慢</div>
+                        </button>
+                        <button @click="setPlaybackRate(0.75)" :class="['speed-modal-btn', { active: playbackRate === 0.75 }]">
+                            <div class="speed-value">0.75x</div>
+                            <div class="speed-desc">慢</div>
+                        </button>
+                        <button @click="setPlaybackRate(1.0)" :class="['speed-modal-btn', { active: playbackRate === 1.0 }]">
+                            <div class="speed-value">1.0x</div>
+                            <div class="speed-desc">正常</div>
+                        </button>
+                        <button @click="setPlaybackRate(1.25)" :class="['speed-modal-btn', { active: playbackRate === 1.25 }]">
+                            <div class="speed-value">1.25x</div>
+                            <div class="speed-desc">快</div>
+                        </button>
+                        <button @click="setPlaybackRate(1.5)" :class="['speed-modal-btn', { active: playbackRate === 1.5 }]">
+                            <div class="speed-value">1.5x</div>
+                            <div class="speed-desc">較快</div>
+                        </button>
+                        <button @click="setPlaybackRate(2.0)" :class="['speed-modal-btn', { active: playbackRate === 2.0 }]">
+                            <div class="speed-value">2.0x</div>
+                            <div class="speed-desc">最快</div>
+                        </button>
                     </div>
                 </div>
             </div>

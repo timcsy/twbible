@@ -390,13 +390,6 @@ createApp({
                         break;
                 }
             });
-            
-            // 點擊外部關閉速度設定面板
-            document.addEventListener('click', (e) => {
-                if (this.showSpeedSettings && !e.target.closest('.speed-settings') && !e.target.closest('[title="播放速度設定"]')) {
-                    this.showSpeedSettings = false;
-                }
-            });
         },
         
         checkNetworkStatus() {
@@ -717,10 +710,6 @@ createApp({
             }
             this.showSpeedSettings = false;
             this.savePlaybackSettings();
-        },
-        
-        toggleSpeedSettings() {
-            this.showSpeedSettings = !this.showSpeedSettings;
         },
         
         savePlaybackSettings() {
