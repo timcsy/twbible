@@ -174,6 +174,14 @@ createApp({
             playbackRate: 1.0, // 播放速度
             showSpeedSettings: false, // 顯示速度設定
             
+            // A-B重複播放
+            abRepeat: {
+                enabled: false,
+                pointA: null,
+                pointB: null,
+                state: 'off' // 'off', 'setA', 'setB', 'repeat'
+            },
+            
             // UI 狀態
             loading: false,
             showHelp: false,
@@ -636,6 +644,9 @@ createApp({
             this.isPlaying = false;
             this.currentTime = 0;
             this.progressPercent = 0;
+            
+            // 停止時重置A-B重複
+            this.resetABRepeat();
         },
         
         seekAudio(event) {
@@ -664,6 +675,9 @@ createApp({
                 // 應用播放速度設定
                 audio.playbackRate = this.playbackRate;
                 console.log(`音檔載入完成: ${this.audioSrc}, 時長: ${audio.duration.toFixed(2)}秒, 播放速度: ${this.playbackRate}x`);
+                
+                // 載入新音檔時重置A-B重複
+                this.resetABRepeat();
             }
         },
         
@@ -672,6 +686,13 @@ createApp({
             if (audio) {
                 this.currentTime = audio.currentTime;
                 this.progressPercent = this.duration > 0 ? (this.currentTime / this.duration) * 100 : 0;
+                
+                // A-B重複播放邏輯
+                if (this.abRepeat.enabled && this.abRepeat.pointA !== null && this.abRepeat.pointB !== null) {
+                    if (this.currentTime >= this.abRepeat.pointB) {
+                        audio.currentTime = this.abRepeat.pointA;
+                    }
+                }
             }
         },
         
@@ -733,6 +754,65 @@ createApp({
                 }
             } catch (error) {
                 console.error('載入播放設定失敗:', error);
+            }
+        },
+        
+        // A-B重複播放功能
+        toggleABRepeat() {
+            const audio = this.$refs.audioPlayer;
+            if (!audio || !this.duration) return;
+            
+            switch (this.abRepeat.state) {
+                case 'off':
+                    // 設定A點
+                    this.abRepeat.pointA = audio.currentTime;
+                    this.abRepeat.state = 'setA';
+                    break;
+                    
+                case 'setA':
+                    // 設定B點並開始重複
+                    this.abRepeat.pointB = audio.currentTime;
+                    
+                    // 確保B點在A點之後
+                    if (this.abRepeat.pointB <= this.abRepeat.pointA) {
+                        this.abRepeat.pointB = Math.min(this.abRepeat.pointA + 5, this.duration);
+                    }
+                    
+                    this.abRepeat.enabled = true;
+                    this.abRepeat.state = 'repeat';
+                    
+                    // 跳到A點開始播放
+                    audio.currentTime = this.abRepeat.pointA;
+                    if (!this.isPlaying) {
+                        this.togglePlay();
+                    }
+                    break;
+                    
+                case 'setB':
+                case 'repeat':
+                    // 取消重複播放
+                    this.resetABRepeat();
+                    break;
+            }
+        },
+        
+        resetABRepeat() {
+            this.abRepeat.enabled = false;
+            this.abRepeat.pointA = null;
+            this.abRepeat.pointB = null;
+            this.abRepeat.state = 'off';
+        },
+        
+        getABRepeatTitle() {
+            switch (this.abRepeat.state) {
+                case 'off':
+                    return '設定A點';
+                case 'setA':
+                    return '設定B點';
+                case 'repeat':
+                    return '取消A-B重複';
+                default:
+                    return 'A-B重複';
             }
         },
         
